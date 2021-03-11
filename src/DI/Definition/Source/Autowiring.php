@@ -5,6 +5,7 @@ namespace DI\Definition\Source;
 use DI\Definition\EntryReference;
 use DI\Definition\ObjectDefinition;
 use DI\Definition\ObjectDefinition\MethodInjection;
+use ReflectionClass;
 
 /**
  * Reads DI class definitions using reflection.
@@ -49,7 +50,13 @@ class Autowiring implements DefinitionSource
                 continue;
             }
 
-            $parameterClass = $parameter->getClass();
+			if (PHP_VERSION_ID > 80000) {
+				$parameterClass = $parameter->getType() && !$parameter->getType()->isBuiltin()
+					? new ReflectionClass($parameter->getType()->getName())
+					: null;
+			} else {
+				$parameterClass = $parameter->getClass();
+			}
 
             if ($parameterClass) {
                 $parameters[$index] = new EntryReference($parameterClass->getName());

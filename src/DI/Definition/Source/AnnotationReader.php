@@ -210,7 +210,13 @@ class AnnotationReader implements DefinitionSource
         }
 
         // Try to use the type-hinting
-        $parameterClass = $parameter->getClass();
+		if (PHP_VERSION_ID > 80000) {
+			$parameterClass = $parameter->getType() && !$parameter->getType()->isBuiltin()
+				? new ReflectionClass($parameter->getType()->getName())
+				: null;
+		} else {
+			$parameterClass = $parameter->getClass();
+		}
         if ($parameterClass) {
             return $parameterClass->getName();
         }

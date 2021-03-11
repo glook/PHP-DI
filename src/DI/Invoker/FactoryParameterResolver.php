@@ -4,6 +4,7 @@ namespace DI\Invoker;
 
 use Invoker\ParameterResolver\ParameterResolver;
 use Psr\Container\ContainerInterface;
+use ReflectionClass;
 use ReflectionFunctionAbstract;
 
 /**
@@ -40,7 +41,13 @@ class FactoryParameterResolver implements ParameterResolver
         }
 
         foreach ($parameters as $index => $parameter) {
-            $parameterClass = $parameter->getClass();
+			if (PHP_VERSION_ID > 80000) {
+				$parameterClass = $parameter->getType() && !$parameter->getType()->isBuiltin()
+					? new ReflectionClass($parameter->getType()->getName())
+					: null;
+			} else {
+				$parameterClass = $parameter->getClass();
+			}
 
             if (!$parameterClass) {
                 continue;

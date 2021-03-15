@@ -41,7 +41,7 @@ class FactoryParameterResolver implements ParameterResolver
         }
 
         foreach ($parameters as $index => $parameter) {
-			if (PHP_VERSION_ID > 80000) {
+			if (PHP_VERSION_ID >= 80000) {
 				$parameterClass = $parameter->getType() && !$parameter->getType()->isBuiltin()
 					? new ReflectionClass($parameter->getType()->getName())
 					: null;
